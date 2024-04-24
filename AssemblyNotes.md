@@ -49,4 +49,191 @@ The FastQC output files include an .html file, which will contain visualizations
 - Overrepresented sequences
 - Adapter content
 
-Check it out here: [_Plestiodon fasciatus_](fasciatus_fastqc.html)
+Check my FastQC results here: [_Plestiodon fasciatus_](fasciatus_fastqc.html)
+
+
+## **09/19/2022; Genome Assembly with hifiasm -- Once Again Adapted from THE [Amanda Markee](https://github.com/amandamarkee/actias-luna-genome.git)**
+
+[hifiasm](https://hifiasm.readthedocs.io/en/latest/) is a fast and easy haplotype-resolved de novo assembly software for PacBio HiFi reads
+ - hifiasm documentation explaining input parameters: https://hifiasm.readthedocs.io/en/latest/pa-assembly.html
+ - hifiasm documentation explaining output files: https://hifiasm.readthedocs.io/en/latest/interpreting-output.html
+Originally, this source script for hifiasm utilized the aggressive duplicate purging options in Hifiasm (option -l 2). By default, hifiasm purges haplotig duplications. Normally, this would be a good approach to take. For some cases, such as with inbred or homozygous genomes, it is useful to specify 0 haplotig duplications. Since this genome is already struggling for size and completeness, I decided to assemble it twice, once with fairly agressive purging (-l 2) and one with no purging (-l 0) to see if I can salvage more data.
+
+With purging:
+```
+#!/bin/sh
+#SBATCH --job-name hoff_hifiasm
+#SBATCH --nodes=16
+#SBATCH --mem=100gb
+#SBATCH --tasks-per-node=1 # Number of cores per node
+#SBATCH --time=30:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jhoffman1@amnh.org
+#SBATCH --output=slurm-%j-%x.out
+#conda init
+source ~/.bash_profile
+conda activate fasciatus_ass
+
+hifiasm -o hoff_hifi_assembly.asm -l 2 -t 32 /home/jhoffman1/mendel-nas1/fasciatus_genome/6354_import-dataset/hifi_reads/m84082_240409_161410_s4.hifi_reads.bc2049.fastq
+
+```
+Without purging:
+```
+#!/bin/sh
+#SBATCH --job-name hoff_hifiasm
+#SBATCH --nodes=16
+#SBATCH --mem=100gb
+#SBATCH --tasks-per-node=1 # Number of cores per node
+#SBATCH --time=30:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jhoffman1@amnh.org
+#SBATCH --output=slurm-%j-%x.out
+#conda init
+source ~/.bash_profile
+conda activate fasciatus_ass
+
+hifiasm -o hoff_hifi_assembly.asm -l 0 -t 32 /home/jhoffman1/mendel-nas1/fasciatus_genome/6354_import-dataset/hifi_reads/m84082_240409_161410_s4.hifi_reads.bc2049.fastq
+
+```
+<br />
+
+## **10/03/2022; Genome Assembly Quality Assessment with assemblystats.py**
+
+- After assembly with hifiasm, we can assess assembly quality using the [assemblystats.py script](https://github.com/MikeTrizna/assembly_stats/tree/0.1.4) created by Mike Trizna.
+- The version of assemblystats.py used here was modified by Paul Frandsen (Brigham Young University).
+
+First, I copied this script into my working directory, and called it assemblystats.py
+
+```
+#!/usr/bin/env python
+
+import numpy as np
+from itertools import groupby
+import json
+import sys
+
+
+def fasta_iter(fasta_file):
+    """Takes a FASTA file, and produces a generator of Header and Sequences.
+    This is a memory-efficient way of analyzing a FASTA files -- without
+    reading the entire file into memory.
+
+    Parameters
+    ----------
+    fasta_file : str
+        The file location of the FASTA file
+
+    Returns
+    -------
+    header: str
+        The string contained in the header portion of the sequence record
+        (everything after the '>')
+    seq: str
+        The sequence portion of the sequence record
+    """
+
+    fh = open(fasta_file)
+    fa_iter = (x[1] for x in groupby(fh, lambda line: line[0] == ">"))
+    for header in fa_iter:
+        # drop the ">"
+        header = next(header)[1:].strip()
+        # join all sequence lines to one.
+        seq = "".join(s.upper().strip() for s in next(fa_iter))
+        yield header, seq
+
+
+def read_genome(fasta_file):
+    """Takes a FASTA file, and produces 2 lists of sequence lengths. It also
+    calculates the GC Content, since this is the only statistic that is not
+    calculated based on sequence lengths.
+
+    Parameters
+    ----------
+    fasta_file : str
+        The file location of the FASTA file
+
+    Returns
+    -------
+    contig_lens: list
+        A list of lengths of all contigs in the genome.
+    scaffold_lens: list
+        A list of lengths of all scaffolds in the genome.
+    gc_cont: float
+        The percentage of total basepairs in the genome that are either G or C.
+    """
+
+    gc = 0
+    total_len = 0
+    contig_lens = []
+    scaffold_lens = []
+    for _, seq in fasta_iter(fasta_file):
+        scaffold_lens.append(len(seq))
+        if "NN" in seq:
+            contig_list = seq.split("NN")
+        else:
+            contig_list = [seq]
+        for contig in contig_list:
+            if len(contig):
+                gc += contig.count('G') + contig.count('C')
+                total_len += len(contig)
+                contig_lens.append(len(contig))
+    gc_cont = (gc / total_len) * 100
+    return contig_lens, scaffold_lens, gc_cont
+
+
+def calculate_stats(seq_lens, gc_cont):
+    stats = {}
+    seq_array = np.array(seq_lens)
+    stats['sequence_count'] = seq_array.size
+    stats['gc_content'] = gc_cont
+    sorted_lens = seq_array[np.argsort(-seq_array)]
+    stats['longest'] = int(sorted_lens[0])
+    stats['shortest'] = int(sorted_lens[-1])
+    stats['median'] = np.median(sorted_lens)
+    stats['mean'] = np.mean(sorted_lens)
+    stats['total_bps'] = int(np.sum(sorted_lens))
+    csum = np.cumsum(sorted_lens)
+    for level in [10, 20, 30, 40, 50]:
+        nx = int(stats['total_bps'] * (level / 100))
+        csumn = min(csum[csum >= nx])
+        l_level = int(np.where(csum == csumn)[0])
+        n_level = int(sorted_lens[l_level])
+
+        stats['L' + str(level)] = l_level
+        stats['N' + str(level)] = n_level
+    return stats
+
+
+if __name__ == "__main__":
+    infilename = sys.argv[1]
+    contig_lens, scaffold_lens, gc_cont = read_genome(infilename)
+    contig_stats = calculate_stats(contig_lens, gc_cont)
+    scaffold_stats = calculate_stats(scaffold_lens, gc_cont)
+    stat_output = {'Contig Stats': contig_stats,
+                   'Scaffold Stats': scaffold_stats}
+    print(json.dumps(stat_output, indent=2, sort_keys=True))
+```
+
+Next, I changed permissions as follows to allow execution permissions.
+```
+chmod +x assemblystats.py
+```
+
+Then, I produced a FASTA file from the initial GFA output file from the hifiasm assembly output. I used the primary contig file, as indicated with asm.bp.p_ctg.fa (p_ctg meaning primary contig)
+```
+awk '/^S/{print ">"$2;print $3}' aclu_hifi_assembly_06-14-2022.asm.bp.p_ctg.gfa > aclu_hifi_assembly_06-14-2022.asm.bp.p_ctg.fa 
+```
+
+Lastly, I ran the assemblystats.py script on the newly generated fasta file of the fga in the format of scriptfilepath/scirptname.py nameofassembly.fa
+```
+/blue/kawahara/amanda.markee/ICBR/hifiasm assemblystats.py /blue/kawahara/amanda.markee/ICBR/hifiasm/hifiasm_output_files/aclu_hifi_assembly_06-14-2022.asm.bp.p_ctg.fa
+```
+Save results as a text file as shown.
+```
+./assemblystats.py aclu_hifi_assembly_06-14-2022.asm.bp.p_ctg.fa >> aclu_hifi_assembly_06-14-2022.txt
+```
+The results will look like the following table:
+
+![Screen Shot 2022-10-03 at 11 54 34 AM](https://user-images.githubusercontent.com/56971761/193622529-568bc8f8-f936-4995-91c8-989f8da21759.png)
+<br />
+
