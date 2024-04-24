@@ -4,14 +4,13 @@ Ok.
 So,
 this workflow is made to check the read quality, assemble the genome, and check the quality of the assembly for a _Plestiodon fasciatus_ genome. Although this genome was sequenced with PacBio3 Revio sequencing, the results we very poor, likely due to preservation in NAP Buffer.
 Here are the stats:
--Yield (Gb): 4.98
--Read Length (kb): 8.71
+- Yield (Gb): 4.98
+- Read Length (kb): 8.71
 
-This is how the extraction QC looked:
-![screenshot of extraction QC](
+Check the .README
 
 
-##Raw Read Quality Assessment with FastQC (Adapted from Amanda Markee: https://github.com/amandamarkee/actias-luna-genome.git)**
+##Raw Read Quality Assessment with FastQC -- Adapted from [Amanda Markee](https://github.com/amandamarkee/actias-luna-genome.git)**
 
 -[FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) is a quality assessment tool for next generation sequencing, often used to assess raw reed quality and highlight problem areas in the form of visualizations (see results below).
 
@@ -20,7 +19,7 @@ Ideally, you would create a FastQC directory for the output data and script as s
 mkdir fastqc_raw
 ```
 
-I didn't make another direcotry, rather, I then copied the following script into the existing directory that contained my raw hifi reads:
+I didn't make another direcotry, rather, I copied the following script into the existing directory that contained my raw hifi reads:
 ```
 #!/bin/sh
 #SBATCH --job-name fastqc_fasciatus
