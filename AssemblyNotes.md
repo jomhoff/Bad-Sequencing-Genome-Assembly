@@ -57,6 +57,7 @@ Check my FastQC results here: [_Plestiodon fasciatus_](fasciatus_fastqc.html)
 [hifiasm](https://hifiasm.readthedocs.io/en/latest/) is a fast and easy haplotype-resolved de novo assembly software for PacBio HiFi reads
  - hifiasm documentation explaining input parameters: https://hifiasm.readthedocs.io/en/latest/pa-assembly.html
  - hifiasm documentation explaining output files: https://hifiasm.readthedocs.io/en/latest/interpreting-output.html
+
 Originally, this source script for hifiasm utilized the aggressive duplicate purging options in Hifiasm (option -l 2). By default, hifiasm purges haplotig duplications. Normally, this would be a good approach to take. For some cases, such as with inbred or homozygous genomes, it is useful to specify 0 haplotig duplications. Since this genome is already struggling for size and completeness, I decided to assemble it twice, once with fairly agressive purging (-l 2) and one with no purging (-l 0) to see if I can salvage more data.
 
 With purging:
@@ -97,7 +98,7 @@ hifiasm -o hoff_hifi_assembly.asm -l 0 -t 32 /home/jhoffman1/mendel-nas1/fasciat
 ```
 <br />
 
-## **10/03/2022; Genome Assembly Quality Assessment with assemblystats.py**
+## **10/03/2022; Genome Assembly Quality Assessment with assemblystats.py -- Again, Adapted from the ~Late~ Great [Amanda Markee](https://github.com/amandamarkee/actias-luna-genome.git)**
 
 - After assembly with hifiasm, we can assess assembly quality using the [assemblystats.py script](https://github.com/MikeTrizna/assembly_stats/tree/0.1.4) created by Mike Trizna.
 - The version of assemblystats.py used here was modified by Paul Frandsen (Brigham Young University).
