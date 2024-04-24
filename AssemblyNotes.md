@@ -9,7 +9,7 @@ Here are the stats:
 
 Check the .README for details regarding extraction QC, library QC, and read length distribution.
 
-##**Raw Read Quality Assessment with FastQC -- Adapted from [Amanda Markee](https://github.com/amandamarkee/actias-luna-genome.git)**
+## **Raw Read Quality Assessment with FastQC -- Adapted from [Amanda Markee](https://github.com/amandamarkee/actias-luna-genome.git)**
 
 -[FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) is a quality assessment tool for next generation sequencing, often used to assess raw reed quality and highlight problem areas in the form of visualizations (see results below).
 
