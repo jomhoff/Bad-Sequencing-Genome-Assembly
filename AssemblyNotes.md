@@ -11,7 +11,7 @@ Check the .README for details regarding extraction QC, library QC, and read leng
 
 ## **Raw Read Quality Assessment with FastQC -- Adapted from [Amanda Markee](https://github.com/amandamarkee/actias-luna-genome.git)**
 
--[FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) is a quality assessment tool for next generation sequencing, often used to assess raw reed quality and highlight problem areas in the form of visualizations (see results below).
+[FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) is a quality assessment tool for next generation sequencing, often used to assess raw reed quality and highlight problem areas in the form of visualizations (see results below).
 
 Ideally, you would create a FastQC directory for the output data and script as so:
 ```
