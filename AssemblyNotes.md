@@ -58,7 +58,7 @@ Check my FastQC results here: [_Plestiodon fasciatus_](fasciatus_fastqc.html)
  - hifiasm documentation explaining input parameters: https://hifiasm.readthedocs.io/en/latest/pa-assembly.html
  - hifiasm documentation explaining output files: https://hifiasm.readthedocs.io/en/latest/interpreting-output.html
 
-Originally, this source script for hifiasm utilized the aggressive duplicate purging options in Hifiasm (option -l 2). By default, hifiasm purges haplotig duplications. Normally, this would be a good approach to take. For some cases, such as with inbred or homozygous genomes, it is useful to specify 0 haplotig duplications. Since this genome is already struggling for size and completeness, I decided to assemble it twice, once with fairly agressive purging (-l 2) and one with no purging (-l 0) to see if I can salvage more data.
+Originally, this source script for hifiasm utilized the aggressive duplicate purging options in Hifiasm (option -l 2). By default, hifiasm purges haplotig duplications. Normally, this would be a good approach to take. For some cases, such as with inbred or homozygous genomes, it is useful to specify 0 haplotig duplications. Since this genome is already struggling for size and completeness, I decided to assemble it twice, once with fairly aggressive purging (-l 2) and one with no purging (-l 0) to see if I can salvage more data.
 
 With purging:
 ```
@@ -98,7 +98,7 @@ hifiasm -o hoff_hifi_assembly.asm -l 0 -t 32 /home/jhoffman1/mendel-nas1/fasciat
 ```
 <br />
 
-## **10/03/2022; Genome Assembly Quality Assessment with assemblystats.py -- Again, Adapted from the ~Late~ Great [Amanda Markee](https://github.com/amandamarkee/actias-luna-genome.git)**
+## **10/03/2022; Genome Assembly Quality Assessment with assemblystats.py -- Again, Adapted From the ~~Late~~ Great [Amanda Markee](https://github.com/amandamarkee/actias-luna-genome.git)**
 
 - After assembly with hifiasm, we can assess assembly quality using the [assemblystats.py script](https://github.com/MikeTrizna/assembly_stats/tree/0.1.4) created by Mike Trizna.
 - The version of assemblystats.py used here was modified by Paul Frandsen (Brigham Young University).
@@ -220,21 +220,67 @@ Next, I changed permissions as follows to allow execution permissions.
 chmod +x assemblystats.py
 ```
 
-Then, I produced a FASTA file from the initial GFA output file from the hifiasm assembly output. I used the primary contig file, as indicated with asm.bp.p_ctg.fa (p_ctg meaning primary contig)
+Then, I produced a FASTA file from the initial GFA output files from the hifiasm assembly output for haplotype 1, haplotype 2, and total. I used the primary contig file, as indicated with asm.bp.p_ctg.fa (p_ctg meaning primary contig)
 ```
-awk '/^S/{print ">"$2;print $3}' aclu_hifi_assembly_06-14-2022.asm.bp.p_ctg.gfa > aclu_hifi_assembly_06-14-2022.asm.bp.p_ctg.fa 
+awk '/^S/{print ">"$2;print $3}' hoff_hifi_assembly.asm.bp.hap1.p_ctg.gfa > hoff_hifi_assembly.hap1-l0.ctg.fa
+awk '/^S/{print ">"$2;print $3}' hoff_hifi_assembly.asm.bp.hap2.p_ctg.gfa > hoff_hifi_assembly.hap2-l0.ctg.fa
+awk '/^S/{print ">"$2;print $3}' hoff_hifi_assembly.asm.bp.p_ctg.gfa > hoff_hifi_assembly.total-l0.ctg.fa
 ```
 
-Lastly, I ran the assemblystats.py script on the newly generated fasta file of the fga in the format of scriptfilepath/scirptname.py nameofassembly.fa
+Lastly, I ran the assemblystats.py script on the newly generated fasta file of the fga in the format of scriptfilepath/scirptname.py nameofassembly.fa and save as a txt file 
 ```
-/blue/kawahara/amanda.markee/ICBR/hifiasm assemblystats.py /blue/kawahara/amanda.markee/ICBR/hifiasm/hifiasm_output_files/aclu_hifi_assembly_06-14-2022.asm.bp.p_ctg.fa
+./assemblystats.py ./hoff_hifi_assembly.hap1-l0.ctg.fa >> hoff_hifi_ass.stats-h1l0.txt
+./assemblystats.py ./hoff_hifi_assembly.hap2-l0.ctg.fa >> hoff_hifi_ass.stats-h2l0.txt
+./assemblystats.py ./hoff_hifi_assembly.total-l0.ctg.fa >> hoff_hifi_ass.stats-Tl0.txt
 ```
 Save results as a text file as shown.
 ```
 ./assemblystats.py aclu_hifi_assembly_06-14-2022.asm.bp.p_ctg.fa >> aclu_hifi_assembly_06-14-2022.txt
 ```
-The results will look like the following table:
+Let's compare the total assembly contig statistics for the two assemblies:
 
-![Screen Shot 2022-10-03 at 11 54 34 AM](https://user-images.githubusercontent.com/56971761/193622529-568bc8f8-f936-4995-91c8-989f8da21759.png)
-<br />
+With Aggressive Purging:
+  > Contig Stats: 
+  >  L10: 866,
+  >  L20: 2135,
+  >  L30: 3714,
+  >  L40: 5589,
+  >  L50: 7780,
+  >  N10: 87238,
+  >  N20: 67486,
+  >  N30: 55699,
+  >  N40: 47290,
+  >  N50: 40767,
+  >  gc_content: 44.955823538395784,
+  >  longest: 286376,
+  >  mean: 36067.164390756305,
+  >  median: 29920.0,
+  >  sequence_count: 26656,
+  >  shortest: 8950,
+  >  total_bps: 961406334
+
+With No Purging:
+  > Contig Stats: 
+  >  L10: 919,
+  >  L20: 2274,
+  >  L30: 3967,
+  >  L40: 5977,
+  >  L50: 8326,
+  >  N10: 83702,
+  >  N20: 64740,
+  >  N30: 53535,
+  >  N40: 45424,
+  >  N50: 39086,
+  >  gc_content: 44.93135646459214,
+  >  longest: 286376,
+  >  mean: 34883.374845738865,
+  >  median: 28997.0,
+  >  sequence_count: 28361,
+  >  shortest: 7839,
+  >  total_bps: 989327394
+
+As we can see, the No Purging run resulted in a slightly better N50 value. The rest of the statistics are similar, with the No Purging run having slightly shorter contigs including that likely were purged in the other run.
+
+Moving forwards, I will be using the No Purging assembly. 
+
 
