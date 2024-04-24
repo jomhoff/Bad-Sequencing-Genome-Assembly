@@ -48,3 +48,5 @@ The FastQC output files include an .html file, which will contain visualizations
 - Sequence Duplication Levels
 - Overrepresented sequences
 - Adapter content
+
+Check it out here: [_Plestiodon fasciatus_](fasciatus_fastqc.html)
