@@ -2,7 +2,7 @@
 
 Howdy.
 
-This is a repository for the assembly of a _Plestiodon fasciatus_ genome from PacBio3 Revio Sequencing. This repository is modelled after Amanda Markee's [actias-luna-genome repository].(https://github.com/amandamarkee/actias-luna-genome.git)
+This is a repository for the assembly of a _Plestiodon fasciatus_ genome from PacBio3 Revio Sequencing. This repository is modelled after Amanda Markee's [actias-luna-genome repository](https://github.com/amandamarkee/actias-luna-genome.git)
 
 ## **Sequencing Issues**
 
