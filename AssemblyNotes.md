@@ -283,4 +283,37 @@ As we can see, the No Purging run resulted in a slightly better N50 value. The r
 
 Moving forwards, I will be using the No Purging assembly. 
 
+## **Checking Assembly Completeness with BUSCO**
+
+[BUSCO](https://busco.ezlab.org/busco_userguide.html) is a program that estimates genome completeness based on evolutionarily-informed expectations of gene content of near-universal single-copy orthologs.
+
+Since the worker nodes of the AMNH's computational clusters don't have access to the internet, it is necesarry to install BUSCO locally:
+```
+#clone repository
+git clone https://gitlab.com/ezlab/busco.git
+cd busco/
+
+#pip install
+python -m pip install .
+```
+
+Make sure you have all the [dependencies](https://busco.ezlab.org/busco_userguide.html#editing-busco-run-configuration) installed for the type of BUSCO run you are planning on running.
+
+Then, I ran this shell file:
+```
+#!/bin/sh
+#SBATCH --job-name Busco_Genomepfas
+#SBATCH --nodes=1
+#SBATCH --mem=40gb
+#SBATCH --time=144:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jhoffman1@amnh.org
+
+source ~/.bash_profile
+conda activate fasciatus_ass
+pfas="/home/jhoffman1/mendel-nas1/fasciatus_genome/6354_import-dataset/hifi_reads/hoff_hifi_assembly.total-l0.ctg.fa"
+busco -m genome -i $pfas -o pfasBUSCO_saur -l sauropsida_odb10 -f --metaeuk --offline --download_path /home/jhoffman1/mendel-nas1/fasciatus_genome
+```
+
+
 
