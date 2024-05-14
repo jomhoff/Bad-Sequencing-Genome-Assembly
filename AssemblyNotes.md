@@ -316,4 +316,13 @@ busco -m genome -i $pfas -o pfasBUSCO_saur -l sauropsida_odb10 -f --metaeuk --of
 ```
 
 
+## **Ragtag onto a Chromosome Level Genome
 
+In order to make some use 
+
+First, let's copy the assembled genome to our Ragtag directory
+```
+cp ./fasciatus_genome/6354_import-dataset/hifi_reads/hoff_hifi_assembly.total-l0.ctg.fa ./ragtag
+```
+
+ok cool. 
