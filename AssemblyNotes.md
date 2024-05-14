@@ -316,7 +316,7 @@ busco -m genome -i $pfas -o pfasBUSCO_saur -l sauropsida_odb10 -f --metaeuk --of
 ```
 
 
-## **Ragtag onto a Chromosome Level Genome
+## **Ragtag onto a Chromosome Level Genome**
 
 In order to make some use out of this long-read genome, let's map it onto the closest chromosome-level reference genome (Tiliqua scincoides), a mere ~85 million yesars divereged. 
 
