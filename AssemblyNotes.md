@@ -318,11 +318,47 @@ busco -m genome -i $pfas -o pfasBUSCO_saur -l sauropsida_odb10 -f --metaeuk --of
 
 ## **Ragtag onto a Chromosome Level Genome
 
-In order to make some use 
+In order to make some use out of this long-read genome, let's map it onto the closest chromosome-level reference genome (Tiliqua scincoides), a mere ~85 million yesars divereged. 
+
+For this, we will be using [Ragtag](https://github.com/malonge/RagTag), which is a collection of software tools for scaffolding and improving modern genome assemblies.
 
 First, let's copy the assembled genome to our Ragtag directory
 ```
 cp ./fasciatus_genome/6354_import-dataset/hifi_reads/hoff_hifi_assembly.total-l0.ctg.fa ./ragtag
 ```
 
-ok cool. 
+ok cool, now we download the Tiliqua genome into the same folder. For me, I uploaded it from local using [Cyberduck](https://cyberduck.io/).
+
+Install ragtag
+```
+#create conda environment
+conda create -n ragtag
+conda activate ragtag
+
+#install ragtag
+conda install -c bioconda ragtag
+```
+
+Shell script for running ragtag
+```
+#!/bin/sh
+#SBATCH --job-name ragtag
+#SBATCH --nodes=1
+#SBATCH --mem=50gb
+#SBATCH --time=500:00:00
+#SBATCH --mail-type=ALL
+#SBATCH --tasks-per-node=40
+#SBATCH --mail-user=jhoffman1@amnh.org
+#SBATCH --output=slurm-%j-%x.out
+
+source ~/.bash_profile
+conda activate ragtag
+ragtag.py scaffold GCA_035046505.1_rTilSci1.hap2_genomic.fna hoff_hifi_assembly.total-l0.ctg.fa -o pseudochrom_pfas/
+```
+
+
+
+
+
+
+
