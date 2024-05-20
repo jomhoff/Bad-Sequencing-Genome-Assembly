@@ -353,7 +353,7 @@ Shell script for running ragtag
 
 source ~/.bash_profile
 conda activate ragtag
-ragtag.py scaffold GCA_035046505.1_rTilSci1.hap2_genomic.fna hoff_hifi_assembly.total-l0.ctg.fa -o pseudochrom_pfas/
+ ragtag.py scaffold GCA_035046505.1_rTilSci1.hap2_genomic.fna hoff_hifi_assembly.total-l0.ctg.fa -r -g 2 -m 100000000 -o pseudochrom_pfas/
 ```
 
 
