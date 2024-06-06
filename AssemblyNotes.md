@@ -18,7 +18,7 @@ Ideally, you would create a FastQC directory for the output data and script as s
 mkdir fastqc_raw
 ```
 
-I didn't make another direcotry, rather, I copied the following script into the existing directory that contained my raw hifi reads:
+I didn't make another directory, rather, I copied the following script into the existing directory that contained my raw hifi reads:
 ```
 #!/bin/sh
 #SBATCH --job-name fastqc_fasciatus
