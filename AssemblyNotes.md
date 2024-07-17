@@ -64,13 +64,13 @@ With purging:
 ```
 #!/bin/sh
 #SBATCH --job-name hoff_hifiasm
-#SBATCH --nodes=16
-#SBATCH --mem=100gb
+#SBATCH --nodes=1
+#SBATCH --mem=50gb
 #SBATCH --tasks-per-node=1 # Number of cores per node
 #SBATCH --time=30:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jhoffman1@amnh.org
-#SBATCH --output=slurm-%j-%x.out
+#SBATCH --output=slurm-%j-%x.outt
 #conda init
 source ~/.bash_profile
 conda activate fasciatus_ass
@@ -82,8 +82,8 @@ Without purging:
 ```
 #!/bin/sh
 #SBATCH --job-name hoff_hifiasm
-#SBATCH --nodes=16
-#SBATCH --mem=100gb
+#SBATCH --nodes=1
+#SBATCH --mem=50gb
 #SBATCH --tasks-per-node=1 # Number of cores per node
 #SBATCH --time=30:00:00
 #SBATCH --mail-type=ALL
