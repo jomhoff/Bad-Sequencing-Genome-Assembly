@@ -303,8 +303,8 @@ Then, I ran this shell file:
 ```
 #!/bin/sh
 #SBATCH --job-name Busco_Genomepfas
-#SBATCH --nodes=1
-#SBATCH --mem=40gb
+#SBATCH --nodes=20
+#SBATCH --mem=100gb
 #SBATCH --time=144:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jhoffman1@amnh.org
