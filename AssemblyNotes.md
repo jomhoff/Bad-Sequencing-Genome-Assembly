@@ -23,9 +23,9 @@ I didn't make another directory, rather, I copied the following script into the 
 #!/bin/sh
 #SBATCH --job-name fastqc_fasciatus
 #SBATCH --nodes=1
-#SBATCH --mem=40gb
-#SBATCH --tasks-per-node=5 # Number of cores per node
-#SBATCH --time=40:00:00
+#SBATCH --mem=100gb
+#SBATCH --tasks-per-node=20 # Number of cores per node
+#SBATCH --time=100:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jhoffman1@amnh.org
 #SBATCH --output=slurm-%j-%x.out
