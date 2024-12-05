@@ -29,6 +29,6 @@ However, looking at the read length distribution, something definitely went wron
 It appears as if the the system was only sequencing a subset of the library biased towards shorter reads.
 The sequencng agency hypothesized that there may be something in the NAP buffer that binds to DNA and blocks the polymerase from passing. The binding agent would have to be fairly scattered, but abundant to the point that the longer reads are inevitably running into them. 
 
-That is just a theory.
+That is just a theory--and probably not right.
 
 
